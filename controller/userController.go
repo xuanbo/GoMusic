@@ -4,6 +4,8 @@ import (
     "net/http"
     "github.com/labstack/echo"
     "github.com/xuanbo/GoMusic/conf"
+    "github.com/xuanbo/GoMusic/util"
+    "github.com/xuanbo/GoMusic/service"
 )
 
 /*****************************************************
@@ -40,9 +42,23 @@ func users(c echo.Context) error {
 
 func show(c echo.Context) error {
     id := c.Param("id")
-    return c.JSON(http.StatusOK, id)
+    integer, success := util.ParseToInt64(id)
+    if !success {
+        return util.NewResult(c, util.ErrorResult(http.StatusBadRequest, "id必须是int", nil))
+    }
+    user, has := service.GetUserService.Find(integer)
+    if !has {
+        return util.NewResult(c, util.ErrorResult(http.StatusOK, "找不到user", nil))
+    }
+    return util.NewResult(c, util.SuccessResult("", user))
 }
 
 func remove(c echo.Context) error {
-    return c.JSON(http.StatusOK, 1)
+    id := c.Param("id")
+    integer, success := util.ParseToInt64(id)
+    if !success {
+        return util.NewResult(c, util.ErrorResult(http.StatusBadRequest, "id必须是int", nil))
+    }
+    service.GetUserService.Remove(integer)
+    return util.NewResult(c, util.SuccessResult("成功删除user", nil))
 }

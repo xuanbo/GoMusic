@@ -3,21 +3,25 @@ package dao
 import (
     "github.com/xuanbo/GoMusic/conf"
     "github.com/xuanbo/GoMusic/model"
+    "github.com/labstack/gommon/log"
 )
 
 func init()  {
-    GetUserDao = UserDaoImpl{}
+    GetUserDao = &UserDaoImpl{}
 }
 
 var (
     GetUserDao UserDao
 )
 
+// define UserDao
 type UserDao interface {
     Save(user *model.User)
-    Remove(id int64)
+    Modify(user *model.User)
+    Find(id int64) (*model.User, bool)
 }
 
+// define UserDaoImpl implements UserDao
 type UserDaoImpl struct {
 }
 
@@ -25,11 +29,25 @@ type UserDaoImpl struct {
  * implements UserDao interface
  ****************************************************/
 
-func (*UserDaoImpl) Save(user *model.User)  {
-    conf.Engine.Insert(user)
+func (*UserDaoImpl) Save(user *model.User) {
+    _, err := conf.Engine.Insert(user)
+    if err != nil {
+        log.Printf("UserDao save DB error[%s]\n", err.Error())
+    }
 }
 
-func (*UserDaoImpl) Remove(id int64) {
+func (*UserDaoImpl) Modify(user *model.User) {
+    _, err := conf.Engine.Update(user)
+    if err != nil {
+        log.Printf("UserDao modify DB error[%s]\n", err.Error())
+    }
+}
+
+func (*UserDaoImpl) Find(id int64) (*model.User, bool)  {
     user := new(model.User)
-    conf.Engine.Id(id).Delete(user)
+    has, err := conf.Engine.Id(id).Get(user)
+    if err != nil {
+        log.Printf("UserDao find DB error[%s]\n", err.Error())
+    }
+    return user, has
 }
