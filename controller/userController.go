@@ -4,8 +4,6 @@ import (
     "net/http"
     "github.com/labstack/echo"
     "github.com/xuanbo/GoMusic/conf"
-    "github.com/xuanbo/GoMusic/dao"
-    "github.com/xuanbo/GoMusic/model"
 )
 
 /*****************************************************

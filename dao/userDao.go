@@ -6,7 +6,7 @@ import (
 )
 
 func init()  {
-    GetUserDao = &UserDaoImpl{}
+    GetUserDao = UserDaoImpl{}
 }
 
 var (
@@ -25,11 +25,11 @@ type UserDaoImpl struct {
  * implements UserDao interface
  ****************************************************/
 
-func (UserDaoImpl) Save(user *model.User)  {
+func (*UserDaoImpl) Save(user *model.User)  {
     conf.Engine.Insert(user)
 }
 
-func (UserDaoImpl) Remove(id int64) {
+func (*UserDaoImpl) Remove(id int64) {
     user := new(model.User)
     conf.Engine.Id(id).Delete(user)
 }
